@@ -1,0 +1,80 @@
+.pie-chart {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.slice {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 50%, 100% 0%, 100% 76%, 50% 50%, 50% 50%);
+  transform-origin: 50% 50%;
+}
+
+.slice1 {
+  background-color: #da7297;
+  transform: rotate(0deg);
+}
+.slice2 {
+  background-color: #0f67b1;
+  transform: rotate(72deg);
+}
+.slice3 {
+  background-color: #f4ce14;
+  transform: rotate(144deg);
+}
+.slice4 {
+  background-color: #6c946f;
+  transform: rotate(216deg);
+}
+.slice5 {
+  background-color: #e59be9;
+  transform: rotate(288deg);
+}
+
+.label {
+  position: absolute;
+  width: 100px;
+  height: 30px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  pointer-events: none;
+  font-weight: bold;
+}
+
+.label1 {
+  transform: translate(70px, -40px);
+}
+.label2 {
+  transform: translate(70px, -40px);
+}
+.label3 {
+  transform: translate(70px, -40px);
+}
+.label4 {
+  transform: translate(70px, -40px);
+}
+.label5 {
+  transform: translate(70px, -40px);
+}
+.inner-circle {
+  position: absolute;
+  width: 15px; /* Veličina unutrašnjeg kružića */
+  height: 15px; /* Veličina unutrašnjeg kružića */
+  background-color: #f1d3ce; /* Pozadinska boja unutrašnjeg kružića (možeš promeniti) */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centriranje kružića */
+}
+.slice:hover {
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}

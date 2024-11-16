@@ -1,0 +1,14 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  background-color: #d1e9f6; /* Set your desired background color here */
+  margin: 0; /* Remove default margin */
+  height: 100vh; /* Ensure it covers the full height */
+  overflow: hidden; /* Prevent scrolling if you want a fixed background */
+}
