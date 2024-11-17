@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, List, ListItem } from '@mui/material';
 import "../PieChart.css";
 
+const DEBUG_RANDOM = false; // ubacuje kviz u rezim gde od 25 totalnih pitanja uzima se 10 nasumicnih
 
 const QuizPage = () => {
   //pitanja
-	const questions = [
+	const questionPool = [
 		{
       "question": "Koji su osnovni kanali u RGB modelu boja?",
       "options": [
         "Crvena (R), Zelena (G), Crna (B)", 
-        "Cijan (C), Magenta (M), Žuta (Y)", 
+        "Cijan (R), Magenta (G), Žuta (B)", 
         "Crvena (R), Zelena (G), Plava (B)"
       ],
       "answer": 2
@@ -19,8 +20,8 @@ const QuizPage = () => {
       "question": "Šta znači skraćenica CMYK?",
       "options": [
         "Cijan (C), Magenta (M), Žuta (Y), Crna (K)", 
-        "Cijan (C), Plavi (B), Crni (K), Crveni (R)", 
-        "Cijan (C), Magenta (M), Zeleni (G), Crni (K)"
+        "Crvena (C), Marun (M), Jačina (Y), Alfa (K)", 
+        "Crvena (C), Plava (M), Zelena (Y), Crna (K)"
       ],
       "answer": 0
     },
@@ -55,8 +56,7 @@ const QuizPage = () => {
       "question": "Koja je glavna razlika između aditivnih i subtraktivnih modela boja?",
       "options": [
         "Aditivni modeli (RGB) kreiraju boje dodavanjem svetlosti, dok subtraktivni (CMYK) kreiraju boje uklanjanjem svetlosti.", 
-        "Subtraktivni modeli (RGB) kreiraju boje dodavanjem svetlosti.",
-        "Aditivni modeli (CMYK) kreiraju boje uklanjanjem svetlosti."
+        "Aditivni modeli (RGB) kreiraju boje uklanjanjem svetlosti, dok subtraktivni (CMYK) kreiraju boje dodavanjem svetlosti.",
       ],
       "answer": 0
     },
@@ -73,7 +73,7 @@ const QuizPage = () => {
       "question": "Zašto se crna boja označava kao 'K' u CMYK modelu?",
       "options": [
         "Zato što je crna boja najvažnija u štamparstvu.", 
-        "Da bi se izbegla konfuzija sa 'B', koja označava plavu boju u RGB modelu.", 
+        "Da bi se izbegla konfuzija sa 'B' za plavu boju.", 
         "Zato što je crna boja uvek korišćena kao osnovna u modelima boja."
       ],
       "answer": 1
@@ -135,9 +135,9 @@ const QuizPage = () => {
     {
       "question": "Koje su tri komponente u HSL modelu boja?",
       "options": [
-        "Nijansa (Hue), Zasićenje (Saturation), Svetlost (Lightness)", 
-        "Nijansa (Hue), Zasićenje (Saturation), Osvetljenje (Brightness)", 
-        "Crvena (Red), Zelena (Green), Plava (Blue)"
+        "Nijansa (H), Zasićenje (S), Svetlost (L)", 
+        "Zasićenje (H), Nijansa (S), Svetlost (L)", 
+        "Nijansa (H), Svetlost (S), Lambda (L)"
       ],
       "answer": 0
     },
@@ -153,9 +153,9 @@ const QuizPage = () => {
     {
       "question": "Šta označava 'A' u RGBA modelu?",
       "options": [
-        "Alfa kanal, koji predstavlja prozirnost.", 
-        "Saturaciju (Saturation)", 
-        "Ambijentalnu svetlost (Ambient light)"
+        "Alfa kanal", 
+        "Azurna", 
+        "Ambijentalna svetlost"
       ],
       "answer": 0
     },
@@ -234,47 +234,109 @@ const QuizPage = () => {
 	];
 
 	
+  const [questions, setQuestions] = useState([]); 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [userAnswers, setUserAnswers] = useState([]);
 	const [showResults, setShowResults] = useState(false);
+  const [storedScore, setStoredScore] = useState(null);
 
-	
+  // Provera localStorage za ostvarenim poenima na kvizu
+	useEffect(() => {
+		const savedScore = localStorage.getItem("quizScore");
+		if (savedScore) {
+			setStoredScore(savedScore);
+		} else {
+			initializeQuiz();
+		}
+	}, []);
+
+  const initializeQuiz = () => {
+		const shuffledQuestions = [...questionPool].sort(() => Math.random() - 0.5);
+    if (DEBUG_RANDOM === true){
+      setQuestions(shuffledQuestions.slice(0, 10)); // uzimanje prvih 10
+      } else {
+      setQuestions(shuffledQuestions.slice(0, 25)); // uzimanje svih
+      }
+		setCurrentQuestion(0);
+		setUserAnswers([]);
+		setShowResults(false);
+		setStoredScore(null);
+	};
+  // reset kviz funkcija 
+  const resetQuiz = () => {
+		const shuffledQuestions = [...questionPool].sort(() => Math.random() - 0.5);
+    if (DEBUG_RANDOM === true){
+      setQuestions(shuffledQuestions.slice(0, 10)); // uzimanje prvih 10
+      } else {
+      setQuestions(shuffledQuestions.slice(0, 25)); // uzimanje svih
+      }
+		setCurrentQuestion(0);
+		setUserAnswers([]);
+		setShowResults(false);
+		setStoredScore(null);
+    localStorage.removeItem("quizScore");
+	};
+
 	const handleAnswerClick = (index) => {
 		setUserAnswers([...userAnswers, index]);
 
 		if (currentQuestion === questions.length - 1) {
+			const score = calculateScore([...userAnswers, index]);
+			localStorage.setItem("quizScore", score + " / " + questions.length); // cuvanje rezultata u localStorage
+			setStoredScore(score);
 			setShowResults(true);
 		} else {
 			setCurrentQuestion(currentQuestion + 1);
 		}
 	};
-
+  
 	// Kalkulisanje poena
 	const calculateScore = () => {
 		return userAnswers.reduce(
-			(score, answer, index) =>
-				score + (answer === questions[index].answer ? 1 : 0),
+			(score, answer, index) => score + (answer === questions[index].answer ? 1 : 0),
 			0
 		);
 	};
 
-	return (
+  return (
 		<Box sx={{ textAlign: "center", marginTop: "20vh" }}>
-			<Typography variant="h4">Kviz</Typography>
-      <br />
-      <br />
+			{/* prikazivanje rezultata */}
 			{showResults ? (
 				<Box>
-					<Typography variant="h5">
-						Your Score: {calculateScore()} / {questions.length}
+					<Typography variant="h5" gutterBottom>
+            Vaš rezultat: {calculateScore()} / {questions.length}
 					</Typography>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={resetQuiz}
+						sx={{ marginTop: "20px" }}
+					>
+						Ponovi Kviz
+					</Button>
 				</Box>
-			) : (
+			) : storedScore !== null  ? (
+				// prikazivanje skladistenog rezultata, ako postoji
 				<Box>
 					<Typography variant="h5">
+            Vaš prošli rezultat: {storedScore}
+					</Typography>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={resetQuiz}
+						sx={{ marginTop: "20px" }}
+					>
+						Ponovi Kviz
+					</Button>
+				</Box>
+			) : questions.length > 0 ? (
+				<Box>
+					<Typography variant="h5" gutterBottom>
 						{questions[currentQuestion].question}
 					</Typography>
-          {/* prikazivanje slike ako postoji */}
+
+					{/* prikazivanje slike ako postoji */}
 					{questions[currentQuestion].image && (
 						<Box>
 							<img
@@ -289,23 +351,26 @@ const QuizPage = () => {
 							/>
 						</Box>
 					)}
+
+					{/* prikazivanje opcija */}
 					<List>
-            {questions[currentQuestion].options.map((option, index) => (
-		          <ListItem key={index} button sx={{ justifyContent: "center" }}>
-			          <Button
-				          variant="contained"
-				          onClick={() => handleAnswerClick(index)}
-				          sx={{ margin: "5px" }}
-			          >
-				          {option}
-			          </Button>
-		          </ListItem>
+						{questions[currentQuestion].options.map((option, index) => (
+							<ListItem key={index} sx={{ justifyContent: "center" }}>
+								<Button
+									variant="contained"
+									onClick={() => handleAnswerClick(index)}
+									sx={{ margin: "5px", width: "60%", backgroundColor:"#fbf7f5", color:"#000000"}}
+								>
+									{option}
+								</Button>
+							</ListItem>
 						))}
 					</List>
 				</Box>
+			) : (
+				<Typography variant="h5">Učitavanje pitanja...</Typography>
 			)}
 		</Box>
 	);
 };
-
 export default QuizPage;
