@@ -292,10 +292,13 @@ const QuizPage = () => {
 
 		setTimeout(() => {
 			if (currentQuestion === questions.length - 1) {
-				setShowResults(true);
-			} else {
-				setCurrentQuestion(currentQuestion + 1);
-			}
+        const score = calculateScore([...userAnswers, index]);
+        localStorage.setItem("quizScore", score + " / " + questions.length); // cuvanje rezultata u localStorage
+        setStoredScore(score);
+        setShowResults(true);
+      } else {
+        setCurrentQuestion(currentQuestion + 1);
+      }
 			setButtonColors([]); 
 		}, 1000);
 	};
