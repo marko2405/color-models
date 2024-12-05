@@ -13,7 +13,7 @@ import {
   Button,
   TablePagination,
 } from "@mui/material";
-import { FilePresent, Link } from "@mui/icons-material";
+import { FilePresent, Link, Download } from "@mui/icons-material"; // Importuj Download ikonu
 
 const docs = [
   {
@@ -28,31 +28,6 @@ const docs = [
     type: "link",
     link: "https://sh.wikipedia.org/wiki/Boja",
   },
-  {
-    id: 3,
-    title: "Dokument 3",
-    type: "pdf",
-    link: "/path/to/document3.pdf",
-  },
-  {
-    id: 4,
-    title: "Dokument 4",
-    type: "pdf",
-    link: "/path/to/document4.pdf",
-  },
-  {
-    id: 5,
-    title: "Dokument 5",
-    type: "link",
-    link: "https://example.com",
-  },
-  {
-    id: 6,
-    title: "Dokument 6",
-    type: "pdf",
-    link: "/path/to/document6.pdf",
-  },
-  // Dodaj više dokumenata po potrebi
 ];
 
 const DocsPage = () => {
@@ -103,19 +78,54 @@ const DocsPage = () => {
                   </TableCell>
                   <TableCell>{doc.title}</TableCell>
                   <TableCell align="right">
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: "#F1D3CE", // Boja dugmeta
-                        color: "black", // Boja teksta
-                        "&:hover": {
-                          backgroundColor: "#e2b1c1", // Boja na hover
-                        },
-                      }}
-                      onClick={() => window.open(doc.link, "_blank")}
-                    >
-                      Otvori
-                    </Button>
+                    {doc.type === "pdf" ? (
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#F1D3CE", // Boja dugmeta
+                          color: "black", // Boja teksta
+                          "&:hover": {
+                            backgroundColor: "#e2b1c1", // Boja na hover
+                          },
+                        }}
+                        onClick={() => window.open(doc.link, "_blank")}
+                      >
+                        Otvori
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#F1D3CE", // Boja dugmeta
+                          color: "black", // Boja teksta
+                          "&:hover": {
+                            backgroundColor: "#e2b1c1", // Boja na hover
+                          },
+                        }}
+                        onClick={() => window.open(doc.link, "_blank")}
+                      >
+                        Posetite Link
+                      </Button>
+                    )}
+                    {doc.type === "pdf" && (
+                      <IconButton
+                        sx={{
+                          marginLeft: "10px",
+                          color: "black",
+                          "&:hover": {
+                            color: "#e2b1c1",
+                          },
+                        }}
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = doc.link;
+                          link.download = doc.title; // Preuzimanje sa originalnim imenom
+                          link.click();
+                        }}
+                      >
+                        <Download /> {/* Ikona za preuzimanje */}
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
