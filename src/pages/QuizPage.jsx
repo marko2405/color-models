@@ -238,6 +238,7 @@ const QuizPage = () => {
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [userAnswers, setUserAnswers] = useState([]);
 	const [showResults, setShowResults] = useState(false);
+  const [buttonColors, setButtonColors] = useState([]);
   const [storedScore, setStoredScore] = useState(null);
 
   // Provera localStorage za ostvarenim poenima na kvizu
@@ -278,16 +279,25 @@ const QuizPage = () => {
 	};
 
 	const handleAnswerClick = (index) => {
+
+		const isCorrect = index === questions[currentQuestion].answer;
+
+		// boje dugmeta
+		const newButtonColors = Array(questions[currentQuestion].options.length).fill("");
+		newButtonColors[index] = isCorrect ? "green" : "red";
+		newButtonColors[questions[currentQuestion].answer] = "green"; 
+		setButtonColors(newButtonColors);
+
 		setUserAnswers([...userAnswers, index]);
 
-		if (currentQuestion === questions.length - 1) {
-			const score = calculateScore([...userAnswers, index]);
-			localStorage.setItem("quizScore", score + " / " + questions.length); // cuvanje rezultata u localStorage
-			setStoredScore(score);
-			setShowResults(true);
-		} else {
-			setCurrentQuestion(currentQuestion + 1);
-		}
+		setTimeout(() => {
+			if (currentQuestion === questions.length - 1) {
+				setShowResults(true);
+			} else {
+				setCurrentQuestion(currentQuestion + 1);
+			}
+			setButtonColors([]); 
+		}, 1000);
 	};
   
 	// Kalkulisanje poena
@@ -359,7 +369,12 @@ const QuizPage = () => {
 								<Button
 									variant="contained"
 									onClick={() => handleAnswerClick(index)}
-									sx={{ margin: "5px", width: "60%", backgroundColor:"#fbf7f5", color:"#000000"}}
+									sx={{
+                    width: "60%", color:"#000000",
+										margin: "5px",
+										backgroundColor: buttonColors[index] || "#fbf7f5",
+										pointerEvents: buttonColors.length ? "none" : "auto", // Disable buttons during feedback
+									}}
 								>
 									{option}
 								</Button>
